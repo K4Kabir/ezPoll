@@ -1,4 +1,4 @@
-import { mutation } from "./_generated/server";
+import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const createPoll = mutation({
@@ -22,5 +22,17 @@ export const createPoll = mutation({
       options: optionsWithVotes,
       createdBy: args.createdBy,
     });
+  },
+});
+
+export const getPolls = mutation({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("polls")
+      .filter((p) => p.eq(p.field("createdBy"), args.userId))
+      .collect();
   },
 });
