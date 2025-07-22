@@ -25,14 +25,12 @@ export const createPoll = mutation({
   },
 });
 
-export const getPolls = mutation({
-  args: {
-    userId: v.string(),
-  },
+export const getPolls = query({
+  args: { userId: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("polls")
-      .filter((p) => p.eq(p.field("createdBy"), args.userId))
+      .filter((q) => q.eq(q.field("createdBy"), args.userId))
       .collect();
   },
 });
