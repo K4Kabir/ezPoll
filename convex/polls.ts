@@ -34,3 +34,11 @@ export const getPolls = query({
       .collect();
   },
 });
+
+export const deletePolls = mutation({
+  args: { id: v.id("polls") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
+    return { message: "success" };
+  },
+});
