@@ -42,3 +42,13 @@ export const deletePolls = mutation({
     return { message: "success" };
   },
 });
+
+export const getPollById = query({
+  args: { id: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("polls")
+      .filter((q) => q.eq(q.field("_id"), args.id))
+      .first();
+  },
+});
