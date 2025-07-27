@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { isPollActive } from "@/lib/utils";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 const Page = function () {
     const { isLoaded, user } = useUser();
@@ -19,6 +20,7 @@ const Page = function () {
     const checkOrCreateUser = useMutation(api.user.CheckUser);
     const polls = useQuery(api.polls.getPolls, userId ? { userId } : "skip");
     const deletePollMutation = useMutation(api.polls.deletePolls);
+    const router = useRouter()
 
     useEffect(() => {
         if (!isLoaded || !user) return;
@@ -80,7 +82,7 @@ const Page = function () {
                         const active = isPollActive(post._creationTime, post.validTill);
                         return (
                             <Card
-                                onClick={() => { }}
+                                onClick={() => { router.push(`/dashboard/${post._id}`) }}
                                 key={post._id}
                                 className="border-gray-200 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 cursor-pointer transition-all"
                                 tabIndex={0}
