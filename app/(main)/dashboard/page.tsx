@@ -47,18 +47,16 @@ const Page = function () {
     }
 
     return (
-        <div className="mx-auto max-w-5xl px-4 py-8 space-y-8">
+        <div className="mx-auto max-w-7xl px-4 py-8 space-y-8">
             <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-semibold text-indigo-900 flex items-center gap-2">
-                    📋 My Polls
-                </h2>
+                <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-50">My Polls</h1>
                 <CreatePollModal />
             </div>
 
             {!polls ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[...Array(3)].map((_, i) => (
-                        <Card key={i} className="rounded-xl shadow p-6 animate-pulse">
+                        <Card key={i} className="rounded-xl shadow-md p-6 animate-pulse">
                             <Skeleton className="w-2/3 h-6 mb-2 rounded" />
                             <Skeleton className="w-full h-4 mb-2 rounded" />
                             <Skeleton className="w-full h-16 rounded" />
@@ -67,13 +65,9 @@ const Page = function () {
                 </div>
             ) : polls.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                    {/* You can swap for a local illustration or SVG */}
-                    <svg className="w-32 h-32 mb-4 text-gray-200" fill="none" viewBox="0 0 128 128">
-                        <circle cx="64" cy="64" r="64" fill="currentColor" />
-                        <text x="50%" y="55%" textAnchor="middle" fill="#A0AEC0" fontSize="32" dy=".3em">?</text>
-                    </svg>
-                    <h3 className="text-xl font-medium text-gray-700 mb-2">No polls yet!</h3>
-                    <p className="text-gray-500 mb-4">Create your first poll for quick engagement.</p>
+                    <div className="text-6xl mb-4">🤷</div>
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">No polls yet!</h3>
+                    <p className="text-gray-500 dark:text-gray-400 mb-4">Create your first poll and see what people think.</p>
                     <CreatePollModal />
                 </div>
             ) : (
@@ -82,22 +76,21 @@ const Page = function () {
                         const active = isPollActive(post._creationTime, post.validTill);
                         return (
                             <Card
-                                onClick={() => { router.push(`/dashboard/${post._id}`) }}
                                 key={post._id}
-                                className="border-gray-200 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 cursor-pointer transition-all"
+                                className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 cursor-pointer transition-all"
                                 tabIndex={0}
                                 aria-label={`Poll: ${post.title}`}
                             >
                                 <CardHeader>
                                     <div className="flex items-start">
                                         <div className="flex-1">
-                                            <CardTitle className="text-lg font-bold line-clamp-2">{post.title}</CardTitle>
-                                            <CardDescription className="text-gray-500 mt-1 line-clamp-2">{post.description}</CardDescription>
+                                            <CardTitle className="text-lg font-bold line-clamp-2 text-gray-900 dark:text-gray-50">{post.title}</CardTitle>
+                                            <CardDescription className="text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{post.description}</CardDescription>
                                         </div>
                                         <span
                                             className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ml-2 ${active
-                                                ? "bg-green-100 text-green-800"
-                                                : "bg-red-100 text-red-800"
+                                                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
+                                                : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100"
                                                 }`}
                                         >
                                             <span>{active ? "✅" : "❌"}</span>
@@ -105,9 +98,12 @@ const Page = function () {
                                         </span>
                                     </div>
                                 </CardHeader>
-                                <CardContent className="mt-4 border-t pt-2 flex justify-between items-center text-xs text-gray-400">
+                                <CardContent className="mt-4 border-t pt-2 flex justify-between items-center text-xs text-gray-400 dark:text-gray-500">
                                     <p>Created On: {new Date(post._creationTime).toLocaleDateString()}</p>
-                                    <Button onClick={(e) => DeletePost(e, post._id)} className="cursor-pointer"><Trash2 /></Button>
+                                    <div className="flex gap-2">
+                                        <Button onClick={() => { router.push(`/dashboard/${post._id}`) }} variant={"outline"}>View</Button>
+                                        <Button onClick={(e) => DeletePost(e, post._id)} className="cursor-pointer"><Trash2 /></Button>
+                                    </div>
                                 </CardContent>
                             </Card>
                         );
