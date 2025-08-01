@@ -12,6 +12,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { ConvexClientProvider } from './ConvexClientProvider'
 import UserContext from '@/lib/contexts/UserContext'
+import { Toaster } from 'sonner'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -61,6 +62,7 @@ export default function RootLayout({
                 {children}
               </UserContext>
             </ConvexClientProvider>
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>

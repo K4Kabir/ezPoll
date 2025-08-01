@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -11,6 +11,9 @@ import { Label } from "@/components/ui/label";
 import { useUser } from "@clerk/nextjs";
 import { isPollActive } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Share2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface PageProps {
     params: {
@@ -53,6 +56,7 @@ export default function Page({ params }: PageProps) {
     const voteOnPoll = useMutation(api.polls.voteOnPoll);
     const [hasVoted, setHasVoted] = React.useState(false);
     const isLoading = poll === undefined;
+    const router = useRouter();
 
 
     React.useEffect(() => {
@@ -79,7 +83,7 @@ export default function Page({ params }: PageProps) {
 
     if (isLoading) {
         return (
-            <main className="max-w-3xl mx-auto p-6">
+            <main className="max-w-7xl mx-auto p-6">
                 <Card>
                     <CardHeader>
                         <div className="flex justify-between items-center">
@@ -99,7 +103,7 @@ export default function Page({ params }: PageProps) {
                             </div>
                             <div className="flex items-center gap-3">
                                 <Skeleton className="h-6 w-6 rounded-full" />
-                                <Skeleton className="h-6 w-1/4" />
+                                <Skeleton className="h-6 w-1/á" />
                                 <Skeleton className="h-4 w-1/2" />
                             </div>
                         </div>
@@ -115,7 +119,7 @@ export default function Page({ params }: PageProps) {
 
     if (!poll) {
         return (
-            <main className="max-w-3xl mx-auto p-6">
+            <main className="max-w-7xl mx-auto p-6">
                 <Card>
                     <CardHeader>
                         <div className="flex justify-between items-center">
@@ -129,33 +133,51 @@ export default function Page({ params }: PageProps) {
 
 
     return (
-        <main className="max-w-3xl mx-auto p-6">
-            <Card>
-                <CardHeader>
-                    <div className="flex justify-between items-center">
-                        <h1 className="text-2xl font-bold">{poll?.title}</h1>
-                    </div>                    <h1>{poll?.description}</h1>
-                    <RadioGroup onValueChange={setSelectedOption} className="py-5 flex flex-col gap-5">
-                        {
-                            poll?.options?.map((option: options, index: number) => {
-                                return (
-                                    <div key={index} className="flex items-center gap-3">
-                                        <RadioGroupItem value={option?.title} id={index + option.title} />
-                                        <Label className="text-xl" htmlFor={index + option?.title}>{option?.title}</Label>
-                                        <Progress value={totalVotes ? (option.totalVotes / totalVotes) * 100 : 0} />
-                                        {option?.totalVotes}
-                                    </div>
+        <main className="max-w-7xl mx-auto p-6">
+            <Button variant={"outline"} onClick={() => router.back()}>Go Back</Button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>{poll.title}</CardTitle>
+                        <CardDescription>{poll.description}</CardDescription>
+                    </CardHeader>
+                    <CardFooter>
+                        <Button variant={"outline"} onClick={() => {
+                            navigator.clipboard.writeText(window.location.href)
+                            toast.success("Link copied to clipboard")
+                        }}>
+                            <Share2 className="mr-2" />
+                            Share
+                        </Button>
+                    </CardFooter>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Vote</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <RadioGroup onValueChange={setSelectedOption} className="py-5 flex flex-col gap-5">
+                            {
+                                poll?.options?.map((option: options, index: number) => {
+                                    return (
+                                        <div key={index} className="flex items-center gap-3">
+                                            <RadioGroupItem value={option?.title} id={index + option.title} />
+                                            <Label className="text-xl" htmlFor={index + option?.title}>{option?.title}</Label>
+                                            <Progress value={totalVotes ? (option.totalVotes / totalVotes) * 100 : 0} />
+                                            {option?.totalVotes}
+                                        </div>
 
-                                )
-                            })
-                        }
-                    </RadioGroup>
-                </CardHeader>
-                <CardFooter className="flex justify-between items-center">
-                    <Button onClick={handleVote} disabled={!selectedOption || !isPollActive(poll?._creationTime, poll?.validTill) || hasVoted}>Submit Vote</Button>
-                    <h1>{isPollActive(poll?._creationTime, poll?.validTill) ? "Active ✅" : "Inactive ❌"}</h1>
-                </CardFooter>
-            </Card>
+                                    )
+                                })
+                            }
+                        </RadioGroup>
+                    </CardContent>
+                    <CardFooter className="flex justify-between items-center">
+                        <Button onClick={handleVote} disabled={!selectedOption || !isPollActive(poll?._creationTime, poll?.validTill) || hasVoted}>Submit Vote</Button>
+                        <h1>{isPollActive(poll?._creationTime, poll?.validTill) ? "Active ✅" : "Inactive ❌"}</h1>
+                    </CardFooter>
+                </Card>
+            </div>
         </main>
     );
 }
