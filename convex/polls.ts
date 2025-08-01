@@ -21,6 +21,7 @@ export const createPoll = mutation({
       validTill: args.validTill,
       options: optionsWithVotes,
       createdBy: args.createdBy,
+      voted: [],
     });
   },
 });
@@ -50,5 +51,44 @@ export const getPollById = query({
       .query("polls")
       .filter((q) => q.eq(q.field("_id"), args.id))
       .first();
+  },
+});
+
+export const voteOnPoll = mutation({
+  args: {
+    pollId: v.id("polls"),
+    optionTitle: v.string(),
+    userId: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const poll = await ctx.db.get(args.pollId);
+    const user = await ctx.auth.getUserIdentity();
+    const ip = user?.ipAddress ?? "unknown";
+
+    if (!poll) {
+      throw new Error("Poll not found");
+    }
+
+    const voterId = args.userId ?? ip;
+
+    if (poll.voted?.includes(voterId)) {
+      throw new Error("Already voted");
+    }
+
+    const option = poll.options.find(
+      (o: { title: string; totalVotes: number }) => o.title === args.optionTitle
+    );
+
+    if (!option) {
+      throw new Error("Option not found");
+    }
+
+    option.totalVotes += 1;
+    poll.voted?.push(voterId);
+
+    await ctx.db.patch(args.pollId, {
+      options: poll.options,
+      voted: poll.voted,
+    });
   },
 });

@@ -13,5 +13,6 @@ export default defineSchema({
         totalVotes: v.number(),
       })
     ),
+    voted: v.optional(v.array(v.string())),
   }),
 });

@@ -91,7 +91,7 @@ const Page = function () {
                                 <CardHeader>
                                     <div className="flex items-start">
                                         <div className="flex-1">
-                                            <CardTitle className="text-lg font-bold text-indigo-800 line-clamp-2">{post.title}</CardTitle>
+                                            <CardTitle className="text-lg font-bold line-clamp-2">{post.title}</CardTitle>
                                             <CardDescription className="text-gray-500 mt-1 line-clamp-2">{post.description}</CardDescription>
                                         </div>
                                         <span
