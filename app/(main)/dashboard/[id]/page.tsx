@@ -14,12 +14,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Share2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useParams } from "next/navigation";
 
-interface PageProps {
-    params: {
-        id: string;
-    };
-}
 
 interface options {
     title: string
@@ -47,8 +43,8 @@ const getAnonymousId = () => {
     return anonymousId;
 };
 
-export default function Page({ params }: PageProps) {
-    const { id } = React.use(params) as { id: string };
+export default function Page() {
+    const { id } = useParams()
     const poll: poll = useQuery(api.polls.getPollById, { id: id as any });
     const totalVotes = poll?.options.reduce((sum, option) => sum + option?.totalVotes, 0)
     const { user } = useUser();

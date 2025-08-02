@@ -26,6 +26,7 @@ interface FormData {
 }
 
 export default function CreatePollModal() {
+    const [open, setOpen] = useState(false)
     const [data, setData] = useState<FormData>({ title: "", description: "" });
     const [options, setOptions] = useState<string[]>(['']);
     const [validity, setValidity] = useState<string>("10")
@@ -68,6 +69,7 @@ export default function CreatePollModal() {
             // Reset form
             setData({ description: "", title: "" });
             setOptions(['']);
+            setOpen(false)
         } catch (err) {
             console.error('Create Poll Error:', err);
         } finally {
@@ -76,7 +78,7 @@ export default function CreatePollModal() {
     };
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button>Create Poll</Button>
             </DialogTrigger>
@@ -86,32 +88,41 @@ export default function CreatePollModal() {
                     <DialogTitle>Create a New Poll</DialogTitle>
                 </DialogHeader>
 
-                <div className="space-y-4 gap-1.5">
-                    <div>
-                        <Label>Title</Label>
+                <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="title" className="text-right">
+                            Title
+                        </Label>
                         <Input
+                            id="title"
+                            name="title"
                             placeholder="Enter poll title"
-                            name='title'
-                            value={data?.title ?? ""}
-                            onChange={(e) => handleInput(e)}
+                            value={data.title}
+                            onChange={handleInput}
+                            className="col-span-3"
                         />
                     </div>
 
-                    <div>
-                        <Label>Description</Label>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="description" className="text-right">
+                            Description
+                        </Label>
                         <Input
-                            placeholder="Enter poll title"
-                            name='description'
-                            value={data?.description ?? ""}
-                            onChange={(e) => handleInput(e)}
+                            id="description"
+                            name="description"
+                            placeholder="Enter poll description"
+                            value={data.description}
+                            onChange={handleInput}
+                            className="col-span-3"
                         />
                     </div>
 
-
-                    <div>
-                        <Label>Valid Till</Label>
-                        <Select value={validity} onValueChange={(value: string) => setValidity(value)}>
-                            <SelectTrigger className='w-full'>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="validity" className="text-right">
+                            Valid Till
+                        </Label>
+                        <Select value={validity} onValueChange={setValidity}>
+                            <SelectTrigger className="col-span-3">
                                 <SelectValue placeholder="Validity" />
                             </SelectTrigger>
                             <SelectContent>
@@ -122,30 +133,31 @@ export default function CreatePollModal() {
                         </Select>
                     </div>
 
-                    <div className="space-y-2 gap-1.5">
-                        <Label>Options</Label>
-                        {options.map((opt, index) => (
-                            <div key={index} className="flex items-center gap-2">
-                                <Input
-                                    placeholder={`Option ${index + 1}`}
-                                    value={opt}
-                                    onChange={(e) => updateOption(e.target.value, index)}
-                                />
-                                {
-                                    options?.length > 1 && <Button variant="ghost" onClick={() => deleteOption(index)}>
-                                        <Trash className="w-4 h-4" />
-                                    </Button>
-                                }
-
-                            </div>
-                        ))}
-                        <Button variant="ghost" onClick={addOption}>
-                            <Plus /> Add Option
-                        </Button>
+                    <div className="grid grid-cols-4 items-start gap-4">
+                        <Label className="text-right pt-2">Options</Label>
+                        <div className="col-span-3 space-y-2">
+                            {options.map((opt, index) => (
+                                <div key={index} className="flex items-center gap-2">
+                                    <Input
+                                        placeholder={`Option ${index + 1}`}
+                                        value={opt}
+                                        onChange={(e) => updateOption(e.target.value, index)}
+                                    />
+                                    {options.length > 1 && (
+                                        <Button variant="ghost" size="icon" onClick={() => deleteOption(index)}>
+                                            <Trash className="w-4 h-4" />
+                                        </Button>
+                                    )}
+                                </div>
+                            ))}
+                            <Button variant="outline" className="w-full mt-2" onClick={addOption}>
+                                <Plus className="w-4 h-4 mr-2" /> Add Option
+                            </Button>
+                        </div>
                     </div>
                 </div>
 
-                <DialogFooter className="mt-4">
+                <DialogFooter>
                     <DialogClose asChild>
                         <Button variant="outline">Cancel</Button>
                     </DialogClose>
