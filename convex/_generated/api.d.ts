@@ -13,7 +13,9 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as comments from "../comments.js";
 import type * as polls from "../polls.js";
+import type * as schemas_comments from "../schemas/comments.js";
 import type * as schemas_polls from "../schemas/polls.js";
 import type * as schemas_user from "../schemas/user.js";
 import type * as user from "../user.js";
@@ -27,7 +29,9 @@ import type * as user from "../user.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  comments: typeof comments;
   polls: typeof polls;
+  "schemas/comments": typeof schemas_comments;
   "schemas/polls": typeof schemas_polls;
   "schemas/user": typeof schemas_user;
   user: typeof user;
