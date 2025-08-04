@@ -16,8 +16,12 @@ import { Label } from '@/components/ui/label';
 import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Plus, Trash } from 'lucide-react';
+import { CalendarIcon, Plus, Trash } from 'lucide-react';
 import { User } from '@/lib/contexts/UserContext';
+import { Calendar } from '../ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
 
 interface FormData {
@@ -30,6 +34,7 @@ export default function CreatePollModal() {
     const [data, setData] = useState<FormData>({ title: "", description: "" });
     const [options, setOptions] = useState<string[]>(['']);
     const [validity, setValidity] = useState<string>("10")
+    const [customDate, setCustomDate] = useState<Date | undefined>(undefined);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const createPoll = useMutation(api.polls.createPoll);
     const { userId } = useContext(User)
@@ -59,16 +64,26 @@ export default function CreatePollModal() {
 
         setIsSubmitting(true);
         try {
+            let validTillValue = validity;
+            if (validity === 'custom' && customDate) {
+                const now = new Date();
+                const diffInMs = customDate.getTime() - now.getTime();
+                const diffInMinutes = Math.round(diffInMs / (1000 * 60));
+                validTillValue = diffInMinutes.toString();
+            }
+
             await createPoll({
                 title: data.title,
                 description: data?.description,
-                validTill: validity,
+                validTill: validTillValue,
                 options: options,
                 createdBy: userId,
             });
             // Reset form
             setData({ description: "", title: "" });
             setOptions(['']);
+            setValidity('10');
+            setCustomDate(undefined);
             setOpen(false)
         } catch (err) {
             console.error('Create Poll Error:', err);
@@ -129,9 +144,40 @@ export default function CreatePollModal() {
                                 <SelectItem value="10">10 mins</SelectItem>
                                 <SelectItem value="15">15 mins</SelectItem>
                                 <SelectItem value="60">1 hr</SelectItem>
+                                <SelectItem value="custom">Custom</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
+
+                    {validity === 'custom' && (
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="custom-date" className="text-right">
+                                Custom Date
+                            </Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                            "w-[280px] justify-start text-left font-normal",
+                                            !customDate && "text-muted-foreground"
+                                        )}
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {customDate ? format(customDate, "PPP") : <span>Pick a date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0">
+                                    <Calendar
+                                        mode="single"
+                                        selected={customDate}
+                                        onSelect={setCustomDate}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                    )}
 
                     <div className="grid grid-cols-4 items-start gap-4">
                         <Label className="text-right pt-2">Options</Label>
