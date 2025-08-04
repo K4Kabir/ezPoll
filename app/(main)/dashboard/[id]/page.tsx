@@ -191,7 +191,7 @@ export default function Page() {
                                     return (
                                         <div key={index} className="flex items-center gap-3">
                                             <RadioGroupItem value={option?.title} id={index + option.title} />
-                                            <Label className="text-xl" htmlFor={index + option?.title}>{option?.title}</Label>
+                                            <Label className="text-md" htmlFor={index + option?.title}>{option?.title}</Label>
                                             <Progress value={totalVotes ? (option.totalVotes / totalVotes) * 100 : 0} />
                                             {option?.totalVotes}
                                         </div>
